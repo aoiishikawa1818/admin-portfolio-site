@@ -1,1 +1,1 @@
-# aoi_ishikawa_section_6-
+# aoi_ishikawa_section_6
