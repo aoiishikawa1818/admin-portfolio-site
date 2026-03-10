@@ -12,3 +12,34 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Profile {
+  id       Int    @id @default(autoincrement())
+  name     String
+  bio      String
+  imageUrl String
+}
+
+model Work {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  url         String
+  imageUrl    String
+  sortOrder   Int
+}
+
+model Skill {
+  id        Int    @id @default(autoincrement())
+  name      String
+  level     Int
+  sortOrder Int
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
