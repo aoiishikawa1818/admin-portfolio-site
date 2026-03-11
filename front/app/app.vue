@@ -40,20 +40,21 @@ const { data, error } = useFetch<PortfolioResponse>(
   <div v-if="error">
     <p>データの取得に失敗しました</p>
   </div>
-  <main v-else>
-    <h1>Portfolio</h1>
-    <p>公開トップページのベースです。</p>
+  <main v-else class="page">
+    <h1 class="page-title">Portfolio</h1>
+    <p class="page-description">公開トップページです。</p>
 
-    <section>
-      <h2>Profile</h2>
+    <section class="section">
+      <h2 class="section-title">Profile</h2>
 
       <div v-if="data?.profile">
-        <p>{{ data.profile.name }}</p>
-        <p>{{ data.profile.bio }}</p>
+        <p class="profile-name">{{ data.profile.name }}</p>
+        <p class="profile-bio">{{ data.profile.bio }}</p>
         <img
           v-if="data.profile.imageUrl && !profileImageError"
           :src="data.profile.imageUrl"
           alt="プロフィール画像"
+          class="profile-image"
           @error="profileImageError = true"
         />
       </div>
@@ -61,27 +62,33 @@ const { data, error } = useFetch<PortfolioResponse>(
       <p v-else>プロフィール情報はまだ登録されていません</p>
     </section>
 
-    <section>
-      <h2>Works</h2>
+    <section class="section">
+      <h2 class="section-title">Works</h2>
 
       <div v-if="data?.works?.length">
-        <div v-for="work in data.works" :key="work.id">
-          <p>{{ work.title }}</p>
-          <p>{{ work.description }}</p>
-          <a :href="work.url">{{ work.url }}</a>
+        <div v-for="work in data.works" :key="work.id" class="work-item">
+          <p class="work-title">{{ work.title }}</p>
+          <p class="work-description">{{ work.description }}</p>
+          <a :href="work.url" class="work-link">{{ work.url }}</a>
+          <img
+            v-if="work.imageUrl"
+            :src="work.imageUrl"
+            alt="作品画像"
+            class="work-image"
+          />
         </div>
       </div>
 
       <p v-else>制作実績はまだありません</p>
     </section>
 
-    <section>
-      <h2>Skills</h2>
+    <section class="section">
+      <h2 class="section-title">Skills</h2>
 
       <div v-if="data?.skills?.length">
-        <div v-for="skill in data.skills" :key="skill.id">
-          <p>{{ skill.name }}</p>
-          <p>{{ skill.level }}</p>
+        <div v-for="skill in data.skills" :key="skill.id" class="skill-item">
+          <p class="skill-name">{{ skill.name }}</p>
+          <p class="skill-level">{{ skill.level }}</p>
         </div>
       </div>
 
@@ -89,3 +96,71 @@ const { data, error } = useFetch<PortfolioResponse>(
     </section>
   </main>
 </template>
+
+<style scoped>
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+.page-title {
+  margin-bottom: 8px;
+  font-size: 32px;
+}
+
+.page-description {
+  margin-bottom: 24px;
+}
+
+.section {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #d1d5db;
+}
+
+.section-title {
+  margin-bottom: 16px;
+  font-size: 24px;
+}
+
+.profile-name,
+.work-title,
+.skill-name {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.profile-bio,
+.work-description,
+.skill-level {
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.work-item,
+.skill-item {
+  margin-bottom: 20px;
+}
+
+.work-link {
+  display: inline-block;
+  margin-top: 4px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.profile-image {
+  display: block;
+  max-width: 40%;
+  height: auto;
+  margin-top: 12px;
+}
+
+.work-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: 12px;
+}
+</style>
