@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { user, isAuthReady, initAuth } = useAuth();
+const config = useRuntimeConfig();
 
 const profileForm = reactive({
   name: "",
@@ -17,9 +18,130 @@ const workForm = reactive({
 
 const skillForm = reactive({
   name: "",
-  level: "",
+  level: 1,
   sortOrder: 1,
 });
+
+const profileMessage = ref("");
+const isSavingProfile = ref(false);
+const workMessage = ref("");
+const isSavingWork = ref(false);
+const skillMessage = ref("");
+const isSavingSkill = ref(false);
+
+const handleSaveProfile = async () => {
+  if (!user.value) {
+    profileMessage.value = "ログイン状態を確認してから保存してください。";
+    return;
+  }
+
+  isSavingProfile.value = true;
+  profileMessage.value = "";
+
+  try {
+    const idToken = await user.value.getIdToken();
+
+    console.log("[admin debug] apiBaseUrl", config.public.apiBaseUrl);
+    const profileApiUrl = "http://localhost:3001/admin/profile";
+
+    await $fetch(profileApiUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: {
+        name: profileForm.name,
+        bio: profileForm.bio,
+        imageUrl: profileForm.imageUrl,
+      },
+    });
+
+    profileMessage.value = "プロフィールを保存しました。";
+  } catch (error) {
+    console.error(error);
+    profileMessage.value = "プロフィールの保存に失敗しました。";
+  } finally {
+    isSavingProfile.value = false;
+  }
+};
+
+const handleCreateWork = async () => {
+  if (!user.value) {
+    workMessage.value = "ログイン状態を確認してから追加してください。";
+    return;
+  }
+
+  isSavingWork.value = true;
+  workMessage.value = "";
+
+  try {
+    const idToken = await user.value.getIdToken();
+    const workApiUrl = "http://localhost:3001/admin/works";
+
+    await $fetch(workApiUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: {
+        title: workForm.title,
+        description: workForm.description,
+        url: workForm.url,
+        imageUrl: workForm.imageUrl,
+        sortOrder: workForm.sortOrder,
+      },
+    });
+
+    workMessage.value = "作品を追加しました。";
+    workForm.title = "";
+    workForm.description = "";
+    workForm.url = "";
+    workForm.imageUrl = "";
+    workForm.sortOrder = 1;
+  } catch (error) {
+    console.error(error);
+    workMessage.value = "作品の追加に失敗しました。";
+  } finally {
+    isSavingWork.value = false;
+  }
+};
+
+const handleCreateSkill = async () => {
+  if (!user.value) {
+    skillMessage.value = "ログイン状態を確認してから追加してください。";
+    return;
+  }
+
+  isSavingSkill.value = true;
+  skillMessage.value = "";
+
+  try {
+    const idToken = await user.value.getIdToken();
+    const skillApiUrl = "http://localhost:3001/admin/skills";
+
+    await $fetch(skillApiUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: {
+        name: skillForm.name,
+        level: skillForm.level,
+        sortOrder: skillForm.sortOrder,
+      },
+    });
+
+    skillMessage.value = "スキルを追加しました。";
+    skillForm.name = "";
+    skillForm.level = 1;
+    skillForm.sortOrder = 1;
+  } catch (error) {
+    console.error(error);
+    skillMessage.value = "スキルの追加に失敗しました。";
+  } finally {
+    isSavingSkill.value = false;
+  }
+};
 
 onMounted(() => {
   initAuth();
@@ -82,7 +204,18 @@ onMounted(() => {
           />
         </div>
 
-        <button class="admin-button" type="button">保存</button>
+        <p v-if="profileMessage" class="admin-form-message">
+          {{ profileMessage }}
+        </p>
+
+        <button
+          class="admin-button"
+          type="button"
+          :disabled="isSavingProfile"
+          @click="handleSaveProfile"
+        >
+          {{ isSavingProfile ? "保存中..." : "保存" }}
+        </button>
       </form>
     </section>
 
@@ -148,7 +281,18 @@ onMounted(() => {
           />
         </div>
 
-        <button class="admin-button" type="button">作品を追加</button>
+        <p v-if="workMessage" class="admin-form-message">
+          {{ workMessage }}
+        </p>
+
+        <button
+          class="admin-button"
+          type="button"
+          :disabled="isSavingWork"
+          @click="handleCreateWork"
+        >
+          {{ isSavingWork ? "追加中..." : "作品を追加" }}
+        </button>
       </form>
     </section>
 
@@ -174,10 +318,11 @@ onMounted(() => {
           <label class="admin-label" for="skill-level">レベル</label>
           <input
             id="skill-level"
-            v-model="skillForm.level"
+            v-model.number="skillForm.level"
             class="admin-input"
-            type="text"
-            placeholder="例: 実務レベル / 学習中"
+            type="number"
+            min="1"
+            placeholder="例: 3"
           />
         </div>
 
@@ -192,7 +337,18 @@ onMounted(() => {
           />
         </div>
 
-        <button class="admin-button" type="button">スキルを追加</button>
+        <p v-if="skillMessage" class="admin-form-message">
+          {{ skillMessage }}
+        </p>
+
+        <button
+          class="admin-button"
+          type="button"
+          :disabled="isSavingSkill"
+          @click="handleCreateSkill"
+        >
+          {{ isSavingSkill ? "追加中..." : "スキルを追加" }}
+        </button>
       </form>
     </section>
   </main>
@@ -239,6 +395,11 @@ onMounted(() => {
   color: #4b5563;
 }
 
+.admin-form-message {
+  margin: 0 0 16px;
+  color: #374151;
+}
+
 .admin-form {
   margin-top: 20px;
 }
@@ -273,5 +434,10 @@ onMounted(() => {
   padding: 12px 20px;
   font: inherit;
   cursor: pointer;
+}
+
+.admin-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 </style>
