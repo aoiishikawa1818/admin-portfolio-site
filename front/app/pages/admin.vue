@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { user, isAuthReady, initAuth } = useAuth();
-const config = useRuntimeConfig();
+const hasShownAuthError = ref(false);
 
 const profileForm = reactive({
   name: "",
@@ -41,7 +41,6 @@ const handleSaveProfile = async () => {
   try {
     const idToken = await user.value.getIdToken();
 
-    console.log("[admin debug] apiBaseUrl", config.public.apiBaseUrl);
     const profileApiUrl = "http://localhost:3001/admin/profile";
 
     await $fetch(profileApiUrl, {
@@ -143,24 +142,39 @@ const handleCreateSkill = async () => {
   }
 };
 
+watchEffect(() => {
+  if (!isAuthReady.value) {
+    return;
+  }
+
+  if (!user.value && !hasShownAuthError.value) {
+    hasShownAuthError.value = true;
+
+    showError(
+      createError({
+        statusCode: 404,
+        statusMessage: "Page Not Found",
+      }),
+    );
+  }
+});
+
 onMounted(() => {
   initAuth();
 });
 </script>
 
 <template>
-  <main class="admin-page">
+  <section v-if="!isAuthReady" class="admin-page">
+    <div class="admin-section">
+      <p class="admin-status">認証状態を確認しています...</p>
+    </div>
+  </section>
+  <main v-if="isAuthReady && user" class="admin-page">
     <section class="admin-section">
       <h1 class="admin-title">管理画面</h1>
       <p class="admin-description">
         このページでは、プロフィール、作品、スキルの管理を行います。
-      </p>
-
-      <p v-if="!isAuthReady" class="admin-status">
-        認証状態を確認しています...
-      </p>
-      <p v-else class="admin-status">
-        {{ user ? "ログイン状態を確認できました。" : "未ログイン状態です。" }}
       </p>
     </section>
 
