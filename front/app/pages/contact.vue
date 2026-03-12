@@ -7,6 +7,11 @@ const message = ref("");
 const isSubmitting = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
+const nameError = ref("");
+const emailError = ref("");
+const messageError = ref("");
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const handleSubmit = async () => {
   if (isSubmitting.value) {
@@ -17,13 +22,40 @@ const handleSubmit = async () => {
   successMessage.value = "";
   errorMessage.value = "";
 
+  nameError.value = "";
+  emailError.value = "";
+  messageError.value = "";
+
+  const trimmedName = name.value.trim();
+  const trimmedEmail = email.value.trim();
+  const trimmedMessage = message.value.trim();
+
+  if (!trimmedName) {
+    nameError.value = "お名前を入力してください。";
+  }
+
+  if (!trimmedEmail) {
+    emailError.value = "メールアドレスを入力してください。";
+  } else if (!emailPattern.test(trimmedEmail)) {
+    emailError.value = "メールアドレスの形式が正しくありません。";
+  }
+
+  if (!trimmedMessage) {
+    messageError.value = "お問い合わせ内容を入力してください。";
+  }
+
+  if (nameError.value || emailError.value || messageError.value) {
+    isSubmitting.value = false;
+    return;
+  }
+
   try {
     await $fetch(`${config.public.apiBaseUrl}/contacts`, {
       method: "POST",
       body: {
-        name: name.value,
-        email: email.value,
-        message: message.value,
+        name: trimmedName,
+        email: trimmedEmail,
+        message: trimmedMessage,
       },
     });
     successMessage.value = "お問い合わせを送信しました。";
@@ -57,11 +89,13 @@ const handleSubmit = async () => {
         <div class="form-group">
           <label class="form-label" for="name">お名前</label>
           <input id="name" v-model="name" type="text" class="form-input" />
+          <p v-if="nameError" class="field-error">{{ nameError }}</p>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="email">メールアドレス</label>
           <input id="email" v-model="email" type="email" class="form-input" />
+          <p v-if="emailError" class="field-error">{{ emailError }}</p>
         </div>
 
         <div class="form-group">
@@ -71,6 +105,7 @@ const handleSubmit = async () => {
             v-model="message"
             class="form-textarea"
           ></textarea>
+          <p v-if="messageError" class="field-error">{{ messageError }}</p>
         </div>
 
         <button type="submit" class="submit-button" :disabled="isSubmitting">
@@ -124,6 +159,11 @@ const handleSubmit = async () => {
 
 .form-label {
   font-weight: 600;
+}
+
+.field-error {
+  margin: 0;
+  color: #b91c1c;
 }
 
 .form-input,
