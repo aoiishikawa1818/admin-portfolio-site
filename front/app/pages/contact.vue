@@ -1,6 +1,4 @@
 <script setup lang="ts">
-const config = useRuntimeConfig();
-
 const name = ref("");
 const email = ref("");
 const message = ref("");
@@ -50,7 +48,7 @@ const handleSubmit = async () => {
   }
 
   try {
-    await $fetch(`${config.public.apiBaseUrl}/contacts`, {
+    await $fetch("http://localhost:3001/contacts", {
       method: "POST",
       body: {
         name: trimmedName,
@@ -73,6 +71,7 @@ const handleSubmit = async () => {
 <template>
   <main class="contact-page">
     <section class="contact-section">
+      <NuxtLink to="/" class="back-link">← トップページへ戻る</NuxtLink>
       <h1 class="contact-title">お問い合わせ</h1>
       <p class="contact-description">
         こちらのページからお問い合わせを送信できます。
@@ -124,6 +123,17 @@ const handleSubmit = async () => {
 .contact-section {
   max-width: 720px;
   margin: 0 auto;
+}
+
+.back-link {
+  display: inline-block;
+  margin: 0 0 20px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
 
 .contact-title {
