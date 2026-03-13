@@ -23,10 +23,19 @@ const skillForm = reactive({
 });
 
 const profileMessage = ref("");
+const profileNameError = ref("");
 const isSavingProfile = ref(false);
 const workMessage = ref("");
+const workTitleError = ref("");
+const workSortOrderError = ref("");
+const workDescriptionError = ref("");
+const workUrlError = ref("");
+const workImageUrlError = ref("");
 const isSavingWork = ref(false);
 const skillMessage = ref("");
+const skillNameError = ref("");
+const skillLevelError = ref("");
+const skillSortOrderError = ref("");
 const isSavingSkill = ref(false);
 
 const handleSaveProfile = async () => {
@@ -35,7 +44,16 @@ const handleSaveProfile = async () => {
     return;
   }
 
+  profileNameError.value = "";
+
+  if (!profileForm.name.trim()) {
+    profileNameError.value = "名前を入力してください。";
+    profileMessage.value = "";
+    return;
+  }
+
   isSavingProfile.value = true;
+  profileNameError.value = "";
   profileMessage.value = "";
 
   try {
@@ -70,7 +88,48 @@ const handleCreateWork = async () => {
     return;
   }
 
+  workTitleError.value = "";
+  workDescriptionError.value = "";
+  workUrlError.value = "";
+  workImageUrlError.value = "";
+  workSortOrderError.value = "";
+
+  if (!workForm.title.trim()) {
+    workTitleError.value = "作品名を入力してください。";
+    workMessage.value = "";
+    return;
+  }
+
+  if (!workForm.description.trim()) {
+    workDescriptionError.value = "説明を入力してください。";
+    workMessage.value = "";
+    return;
+  }
+
+  if (!workForm.url.trim()) {
+    workUrlError.value = "URLを入力してください。";
+    workMessage.value = "";
+    return;
+  }
+
+  if (!workForm.imageUrl.trim()) {
+    workImageUrlError.value = "画像URLを入力してください。";
+    workMessage.value = "";
+    return;
+  }
+
+  if (workForm.sortOrder < 1) {
+    workSortOrderError.value = "表示順は1以上で入力してください。";
+    workMessage.value = "";
+    return;
+  }
+
   isSavingWork.value = true;
+  workTitleError.value = "";
+  workDescriptionError.value = "";
+  workUrlError.value = "";
+  workImageUrlError.value = "";
+  workSortOrderError.value = "";
   workMessage.value = "";
 
   try {
@@ -111,7 +170,32 @@ const handleCreateSkill = async () => {
     return;
   }
 
+  skillNameError.value = "";
+  skillLevelError.value = "";
+  skillSortOrderError.value = "";
+
+  if (!skillForm.name.trim()) {
+    skillNameError.value = "スキル名を入力してください。";
+    skillMessage.value = "";
+    return;
+  }
+
+  if (skillForm.level < 1) {
+    skillLevelError.value = "レベルは1以上で入力してください。";
+    skillMessage.value = "";
+    return;
+  }
+
+  if (skillForm.sortOrder < 1) {
+    skillSortOrderError.value = "表示順は1以上で入力してください。";
+    skillMessage.value = "";
+    return;
+  }
+
   isSavingSkill.value = true;
+  skillNameError.value = "";
+  skillLevelError.value = "";
+  skillSortOrderError.value = "";
   skillMessage.value = "";
 
   try {
@@ -194,6 +278,9 @@ onMounted(() => {
             type="text"
             placeholder="例: 石川 葵"
           />
+          <p v-if="profileNameError" class="admin-form-error">
+            {{ profileNameError }}
+          </p>
         </div>
 
         <div class="admin-form-group">
@@ -249,6 +336,9 @@ onMounted(() => {
             type="text"
             placeholder="例: Portfolio Site"
           />
+          <p v-if="workTitleError" class="admin-form-error">
+            {{ workTitleError }}
+          </p>
         </div>
 
         <div class="admin-form-group">
@@ -260,6 +350,9 @@ onMounted(() => {
             rows="4"
             placeholder="作品の説明を入力してください"
           />
+          <p v-if="workDescriptionError" class="admin-form-error">
+            {{ workDescriptionError }}
+          </p>
         </div>
 
         <div class="admin-form-group">
@@ -271,6 +364,9 @@ onMounted(() => {
             type="text"
             placeholder="https://example.com"
           />
+          <p v-if="workUrlError" class="admin-form-error">
+            {{ workUrlError }}
+          </p>
         </div>
 
         <div class="admin-form-group">
@@ -282,6 +378,9 @@ onMounted(() => {
             type="text"
             placeholder="/images/works/work.png"
           />
+          <p v-if="workImageUrlError" class="admin-form-error">
+            {{ workImageUrlError }}
+          </p>
         </div>
 
         <div class="admin-form-group">
@@ -293,6 +392,9 @@ onMounted(() => {
             type="number"
             min="1"
           />
+          <p v-if="workSortOrderError" class="admin-form-error">
+            {{ workSortOrderError }}
+          </p>
         </div>
 
         <p v-if="workMessage" class="admin-form-message">
@@ -326,6 +428,9 @@ onMounted(() => {
             type="text"
             placeholder="例: TypeScript"
           />
+          <p v-if="skillNameError" class="admin-form-error">
+            {{ skillNameError }}
+          </p>
         </div>
 
         <div class="admin-form-group">
@@ -338,6 +443,9 @@ onMounted(() => {
             min="1"
             placeholder="例: 3"
           />
+          <p v-if="skillLevelError" class="admin-form-error">
+            {{ skillLevelError }}
+          </p>
         </div>
 
         <div class="admin-form-group">
@@ -349,6 +457,9 @@ onMounted(() => {
             type="number"
             min="1"
           />
+          <p v-if="skillSortOrderError" class="admin-form-error">
+            {{ skillSortOrderError }}
+          </p>
         </div>
 
         <p v-if="skillMessage" class="admin-form-message">
@@ -412,6 +523,12 @@ onMounted(() => {
 .admin-form-message {
   margin: 0 0 16px;
   color: #374151;
+}
+
+.admin-form-error {
+  margin: 8px 0 0;
+  color: #dc2626;
+  font-size: 14px;
 }
 
 .admin-form {
