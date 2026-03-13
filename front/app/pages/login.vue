@@ -30,6 +30,7 @@ const handleLogin = async () => {
 <template>
   <main class="login-page">
     <section class="login-card">
+      <NuxtLink to="/" class="back-link">← トップページへ戻る</NuxtLink>
       <h1 class="login-title">ログイン</h1>
       <p class="login-description">
         管理画面を利用するために、登録済みのアカウントでログインしてください。
@@ -79,6 +80,17 @@ const handleLogin = async () => {
   border: 1px solid #dcdcdc;
   border-radius: 12px;
   background-color: #ffffff;
+}
+
+.back-link {
+  display: inline-block;
+  margin: 0 0 20px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }
 
 .login-title {

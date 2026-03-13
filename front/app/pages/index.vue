@@ -28,11 +28,10 @@ type PortfolioResponse = {
   skills: Skill[];
 };
 
-const config = useRuntimeConfig();
 const profileImageError = ref(false);
 
 const { data, error } = useFetch<PortfolioResponse>(
-  `${config.public.apiBaseUrl}/portfolio`,
+  "http://localhost:3001/portfolio",
 );
 </script>
 
@@ -41,10 +40,15 @@ const { data, error } = useFetch<PortfolioResponse>(
     <p>データの取得に失敗しました</p>
   </div>
   <main v-else class="page">
-    <h1 class="page-title">Portfolio</h1>
-    <p class="page-description">公開トップページです。</p>
+    <header class="page-header">
+      <p class="page-header-logo">Portfolio</p>
+      <nav class="page-header-nav">
+        <NuxtLink to="/contact" class="page-header-link">お問い合わせ</NuxtLink>
+        <NuxtLink to="/login" class="page-header-link">管理者ログイン</NuxtLink>
+      </nav>
+    </header>
 
-    <section class="section">
+    <section class="section section-first">
       <h2 class="section-title">Profile</h2>
 
       <div v-if="data?.profile">
@@ -98,25 +102,56 @@ const { data, error } = useFetch<PortfolioResponse>(
 </template>
 
 <style scoped>
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.page-header-logo {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.page-header-nav {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.page-header-link {
+  display: inline-block;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.page-header-link:hover {
+  background-color: #f9fafb;
+}
+
 .page {
   max-width: 960px;
   margin: 0 auto;
   padding: 32px 16px 48px;
 }
 
-.page-title {
-  margin-bottom: 8px;
-  font-size: 32px;
-}
-
-.page-description {
-  margin-bottom: 24px;
-}
-
 .section {
   margin-top: 32px;
   padding-top: 16px;
   border-top: 1px solid #d1d5db;
+}
+
+.section-first {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
 .section-title {
