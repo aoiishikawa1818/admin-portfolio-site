@@ -24,6 +24,8 @@ const skillForm = reactive({
 
 const profileMessage = ref("");
 const profileNameError = ref("");
+const profileBioError = ref("");
+const profileImageUrlError = ref("");
 const isSavingProfile = ref(false);
 const workMessage = ref("");
 const workTitleError = ref("");
@@ -45,6 +47,8 @@ const handleSaveProfile = async () => {
   }
 
   profileNameError.value = "";
+  profileBioError.value = "";
+  profileImageUrlError.value = "";
 
   if (!profileForm.name.trim()) {
     profileNameError.value = "名前を入力してください。";
@@ -52,8 +56,22 @@ const handleSaveProfile = async () => {
     return;
   }
 
+  if (!profileForm.bio.trim()) {
+    profileBioError.value = "自己紹介を入力してください。";
+    profileMessage.value = "";
+    return;
+  }
+
+  if (!profileForm.imageUrl.trim()) {
+    profileImageUrlError.value = "画像URLを入力してください。";
+    profileMessage.value = "";
+    return;
+  }
+
   isSavingProfile.value = true;
   profileNameError.value = "";
+  profileBioError.value = "";
+  profileImageUrlError.value = "";
   profileMessage.value = "";
 
   try {
@@ -74,9 +92,15 @@ const handleSaveProfile = async () => {
     });
 
     profileMessage.value = "プロフィールを保存しました。";
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    profileMessage.value = "プロフィールの保存に失敗しました。";
+    const statusCode = error?.statusCode ?? error?.status;
+
+    if (statusCode === 401) {
+      profileMessage.value = "ログイン状態を確認してから保存してください。";
+    } else {
+      profileMessage.value = "プロフィールの保存に失敗しました。";
+    }
   } finally {
     isSavingProfile.value = false;
   }
@@ -156,9 +180,15 @@ const handleCreateWork = async () => {
     workForm.url = "";
     workForm.imageUrl = "";
     workForm.sortOrder = 1;
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    workMessage.value = "作品の追加に失敗しました。";
+    const statusCode = error?.statusCode ?? error?.status;
+
+    if (statusCode === 401) {
+      workMessage.value = "ログイン状態を確認してから追加してください。";
+    } else {
+      workMessage.value = "作品の追加に失敗しました。";
+    }
   } finally {
     isSavingWork.value = false;
   }
@@ -218,9 +248,15 @@ const handleCreateSkill = async () => {
     skillForm.name = "";
     skillForm.level = 1;
     skillForm.sortOrder = 1;
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    skillMessage.value = "スキルの追加に失敗しました。";
+    const statusCode = error?.statusCode ?? error?.status;
+
+    if (statusCode === 401) {
+      skillMessage.value = "ログイン状態を確認してから追加してください。";
+    } else {
+      skillMessage.value = "スキルの追加に失敗しました。";
+    }
   } finally {
     isSavingSkill.value = false;
   }
@@ -292,6 +328,9 @@ onMounted(() => {
             rows="5"
             placeholder="自己紹介を入力してください"
           />
+          <p v-if="profileBioError" class="admin-form-error">
+            {{ profileBioError }}
+          </p>
         </div>
 
         <div class="admin-form-group">
@@ -303,6 +342,9 @@ onMounted(() => {
             type="text"
             placeholder="/images/profile/profile.png"
           />
+          <p v-if="profileImageUrlError" class="admin-form-error">
+            {{ profileImageUrlError }}
+          </p>
         </div>
 
         <p v-if="profileMessage" class="admin-form-message">
