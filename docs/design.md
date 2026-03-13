@@ -16,7 +16,7 @@
 - id: 必須
 - name: 必須
 - bio: 必須
-- imageUrl: 任意
+- imageUrl: 必須
 
 ### works
 
@@ -26,8 +26,8 @@
 - id: 必須
 - title: 必須
 - description: 必須
-- url: 任意
-- imageUrl: 任意
+- url: 必須
+- imageUrl: 必須
 - sortOrder: 必須
 
 ### skills
@@ -64,34 +64,43 @@
 - GET /portfolio
   - 公開トップページ表示用の API
   - profile / works / skills をまとめて返します
+  - works と skills は sortOrder をもとに表示順をそろえて返す前提です
+  - フロント側の公開トップページから参照します
   - 認証不要
 
 - POST /contacts
   - 問い合わせ内容を保存する API
-  - 受け取る項目は name / email / message
+  - 受け取る項目は name / email / message です
+  - 公開の問い合わせフォームから送信します
+  - 成功時は保存完了メッセージを返す前提です
   - 認証不要
 
 ### 管理API
 
 - PUT /admin/profile
-  - profile 1 件を更新
-  - 認証必要
+  - 管理画面のプロフィール保存で使う API
+  - name / bio / imageUrl を受け取って profile 1 件を更新します
+  - Firebase Authentication の ID トークンによる認証が必要です
 
 - POST /admin/works
-  - works を 1 件追加
-  - 認証必要
+  - 管理画面の作品追加で使う API
+  - title / description / url / imageUrl / sortOrder を受け取って works を 1 件追加します
+  - Firebase Authentication の ID トークンによる認証が必要です
 
 - PUT /admin/works/:id
-  - works を 1 件更新
-  - 認証必要
+  - 管理画面の作品編集で使う API
+  - :id で対象の works を指定して更新します
+  - Firebase Authentication の ID トークンによる認証が必要です
 
 - POST /admin/skills
-  - skills を 1 件追加
-  - 認証必要
+  - 管理画面のスキル追加で使う API
+  - name / level / sortOrder を受け取って skills を 1 件追加します
+  - Firebase Authentication の ID トークンによる認証が必要です
 
 - PUT /admin/skills/:id
-  - skills を 1 件更新
-  - 認証必要
+  - 管理画面のスキル編集で使う API
+  - :id で対象の skills を指定して更新します
+  - Firebase Authentication の ID トークンによる認証が必要です
 
 ### レスポンス / エラー方針
 
