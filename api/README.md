@@ -1,8 +1,8 @@
-# API
+# 管理画面付きポートフォリオサイト API
 
 ## 概要
 
-このディレクトリは、管理画面付きポートフォリオサイト課題の API サーバーです。
+このディレクトリは、管理画面付きポートフォリオサイトの API サーバーです。
 Express.js + TypeScript + Prisma + PostgreSQL で構成しており、公開APIと管理APIを提供します。
 管理APIは Firebase Authentication の ID トークンを使って認証保護しています。
 
@@ -86,4 +86,4 @@ npm run dev
 
 - Firebase サービスアカウント鍵 JSON は Git 管理対象外です。
 - 詳しい設計メモはルートの `docs/design.md` を参照してください。
-- この README は API 側の最小説明用です。
+- この README では API 側の構成・起動方法・認証方針をまとめています。
